@@ -1,11 +1,9 @@
 import argparse
 import logging
 import json
-from re import X
 import requests
 
 import apache_beam as beam
-from apache_beam.io import WriteToText
 from apache_beam.options.pipeline_options import PipelineOptions
 from apache_beam.options.pipeline_options import SetupOptions
 
@@ -68,7 +66,6 @@ def run(argv=None, save_main_session=True):
             #| beam.Map(print)
         )
 
-        #counts | 'Write' >> WriteToText(known_args.output)
         counts | 'Write to BigQuery' >> beam.io.WriteToBigQuery(
             'green-eye-cloud:warehouse.test',
             schema='Campo:STRING,Recetas:INTEGER',
