@@ -13,7 +13,7 @@ from google.cloud.bigquery import Client
 
 class GetApiData(beam.DoFn):
 
-    def __init__(self, auth:str, year:int, month:int):
+    def __init__(self, auth: str, year: int, month: int):
         self.auth = auth
         self.year = year
         self.month = month
@@ -102,11 +102,17 @@ def run(argv=None, save_main_session=True):
         help='Month to query'
     )
     known_args, pipeline_args = parser.parse_known_args(argv)
-    
-    delete_records('{}.{}.{}'.format(known_args.project, known_args.dataset, known_args.table), known_args.year, known_args.month)
+
+    delete_records(
+        '{}.{}.{}'.format(known_args.project,
+                          known_args.dataset,
+                          known_args.table),
+        known_args.year,
+        known_args.month
+    )
 
     pipeline_options = PipelineOptions(
-        pipeline_args, 
+        pipeline_args,
         project=known_args.project
     )
     pipeline_options.view_as(
@@ -126,11 +132,13 @@ def run(argv=None, save_main_session=True):
             | 'Count Fields' >> beam.Map(lambda x: (x['landName'], len(x['lotName'].split(', '))))
             | 'Group and Sum' >> beam.CombinePerKey(sum)
             | 'Convert to Dict' >> beam.Map(lambda x: dict(Year=known_args.year, Month=known_args.month, Campo=x[0], Recetas=x[1]))
-            #| beam.Map(print)
+            # | beam.Map(print)
         )
 
         counts | 'Write to BigQuery' >> beam.io.WriteToBigQuery(
-            '{}:{}.{}'.format(known_args.project, known_args.dataset, known_args.table),
+            '{}:{}.{}'.format(known_args.project,
+                              known_args.dataset,
+                              known_args.table),
             schema='Year:INTEGER,Month:INTEGER,Campo:STRING,Recetas:INTEGER',
             write_disposition=beam.io.BigQueryDisposition.WRITE_APPEND,
             create_disposition=beam.io.BigQueryDisposition.CREATE_IF_NEEDED

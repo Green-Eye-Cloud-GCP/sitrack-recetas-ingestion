@@ -108,9 +108,8 @@ def run():
 
     pipeline_options = PipelineOptions(flags=None, save_main_session=True)
     pipeline_options.view_as(TemplateOptions)
-    
+
     options = pipeline_options.get_all_options()
-    logging.info(options)
 
     delete_records(
         '{}.{}.{}'.format(options['project'],
