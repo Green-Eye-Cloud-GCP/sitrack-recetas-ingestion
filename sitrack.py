@@ -102,9 +102,6 @@ def run(argv=None, save_main_session=True):
         help='Month to query'
     )
     known_args, pipeline_args = parser.parse_known_args(argv)
-
-    print(pipeline_args)
-    return
     
     delete_records('{}.{}.{}'.format(known_args.project, known_args.dataset, known_args.table), known_args.year, known_args.month)
 
