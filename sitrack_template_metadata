@@ -1,0 +1,36 @@
+{
+    "description": "Pipeline to intake the amount of recepies created on Sitrack",
+    "name": "Sitrack recetas",
+    "parameters": [
+        {
+            "name": "auth",
+            "label": "Sitrack API key",
+            "isOptional": false 
+        },
+        {
+            "name": "project",
+            "label": "GCP project",
+            "isOptional": false 
+        },
+        {
+            "name": "dataset",
+            "label": "BigQuery dataset",
+            "isOptional": false 
+        },
+        {
+            "name": "table",
+            "label": "BigQuery table",
+            "isOptional": false 
+        },
+        {
+            "name": "year",
+            "label": "Year to query",
+            "isOptional": true
+        },
+        {
+            "name": "month",
+            "label": "Month to query",
+            "isOptional": true
+        }
+    ]
+}

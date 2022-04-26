@@ -103,6 +103,9 @@ def run(argv=None, save_main_session=True):
     )
     known_args, pipeline_args = parser.parse_known_args(argv)
 
+    print(pipeline_args)
+    return
+    
     delete_records('{}.{}.{}'.format(known_args.project, known_args.dataset, known_args.table), known_args.year, known_args.month)
 
     pipeline_options = PipelineOptions(
