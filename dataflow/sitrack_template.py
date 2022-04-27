@@ -3,7 +3,8 @@ import json
 import requests
 
 import apache_beam as beam
-from apache_beam.options.pipeline_options import PipelineOptions, SetupOptions
+from apache_beam.options.pipeline_options import PipelineOptions, SetupOptions, GoogleCloudOptions
+
 
 class GetApiData(beam.DoFn):
 
@@ -91,11 +92,10 @@ def run():
             | 'Count Fields' >> beam.Map(lambda x: (x['landName'], len(x['lotName'].split(', '))))
             | 'Group and Sum' >> beam.CombinePerKey(sum)
             | 'Convert to Dict' >> beam.Map(lambda x: dict(Year=int(options.year.get()), Month=int(options.month.get()), Campo=x[0], Recetas=x[1]))
-            # | beam.Map(print)
         )
 
         counts | 'Write to BigQuery' >> beam.io.WriteToBigQuery(
-            '{}:{}.{}'.format(pipeline_options.get_all_options()['project'],
+            '{}:{}.{}'.format(pipeline_options.view_as(GoogleCloudOptions).project,
                               options.dataset,
                               options.table),
             schema='Year:INTEGER,Month:INTEGER,Campo:STRING,Recetas:INTEGER',
@@ -105,5 +105,7 @@ def run():
 
 
 if __name__ == '__main__':
+
     logging.getLogger().setLevel(logging.INFO)
+
     run()

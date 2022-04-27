@@ -5,8 +5,7 @@ import requests
 from datetime import datetime
 
 import apache_beam as beam
-from apache_beam.options.pipeline_options import PipelineOptions
-from apache_beam.options.pipeline_options import SetupOptions
+from apache_beam.options.pipeline_options import PipelineOptions, SetupOptions, GoogleCloudOptions
 
 from google.cloud.bigquery import Client
 
@@ -111,10 +110,12 @@ def run(argv=None, save_main_session=True):
         known_args.month
     )
 
-    pipeline_options = PipelineOptions(
-        pipeline_args,
-        project=known_args.project
-    )
+    pipeline_options = PipelineOptions(pipeline_args)
+
+    pipeline_options.view_as(
+        GoogleCloudOptions
+    ).project = known_args.project
+    
     pipeline_options.view_as(
         SetupOptions
     ).save_main_session = save_main_session
@@ -146,5 +147,7 @@ def run(argv=None, save_main_session=True):
 
 
 if __name__ == '__main__':
+
     logging.getLogger().setLevel(logging.INFO)
+
     run()
