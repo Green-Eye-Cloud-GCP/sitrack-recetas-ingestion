@@ -58,7 +58,7 @@ def sitrack_recetas():
 
 def main(event, context):
 
-    bigquery_delete
+    bigquery_delete()
     response = sitrack_recetas()
 
     print('response', response)
