@@ -4,6 +4,7 @@ import requests
 
 import apache_beam as beam
 from apache_beam.options.pipeline_options import PipelineOptions
+from apache_beam.options.pipeline_options import SetupOptions, RuntimeValueProvider
 
 class GetApiData(beam.DoFn):
 
@@ -21,8 +22,8 @@ class GetApiData(beam.DoFn):
             api_url,
             json={
                 'processId': '43effed1-314b-4a8e-8e65-1115dc518c7d',
-                'year': int(self.year),
-                'month': [int(self.month)]
+                'year': int(self.year.get()),
+                'month': [int(self.month.get())]
             },
             headers={
                 'Authorization': self.auth
@@ -76,9 +77,12 @@ class TemplateOptions(PipelineOptions):
 
 def run():
 
-    pipeline_options = PipelineOptions(flags=None, save_main_session=True)
+    pipeline_options = PipelineOptions()
     
+    global options
+
     options = pipeline_options.view_as(TemplateOptions)
+    pipeline_options.view_as(SetupOptions).save_main_session = True
 
     with beam.Pipeline(options=pipeline_options) as p:
 
@@ -92,7 +96,7 @@ def run():
             lines
             | 'Count Fields' >> beam.Map(lambda x: (x['landName'], len(x['lotName'].split(', '))))
             | 'Group and Sum' >> beam.CombinePerKey(sum)
-            | 'Convert to Dict' >> beam.Map(lambda x: dict(Year=options.year, Month=options.month, Campo=x[0], Recetas=x[1]))
+            | 'Convert to Dict' >> beam.Map(lambda x: dict(Year=int(options.year.get()), Month=int(options.month.get()), Campo=x[0], Recetas=x[1]))
             # | beam.Map(print)
         )
 
