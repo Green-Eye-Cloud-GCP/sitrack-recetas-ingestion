@@ -31,6 +31,8 @@ class GetApiData(beam.DoFn):
         )
 
         json_response = json.loads(response.text)
+        logging.info(json_response)
+        
         return json_response['recipeHistory']
 
 
@@ -79,8 +81,6 @@ def run():
 
     pipeline_options = PipelineOptions()
     
-    global options
-
     options = pipeline_options.view_as(TemplateOptions)
     pipeline_options.view_as(SetupOptions).save_main_session = True
 
