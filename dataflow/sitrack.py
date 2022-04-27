@@ -130,6 +130,7 @@ def run(argv=None, save_main_session=True):
 
         counts = (
             lines
+            | 'Filter by Status' >> beam.Filter(lambda x: (x['status'] in ['Abierta', 'Asignada a contratista']))
             | 'Count Fields' >> beam.Map(lambda x: (x['landName'], len(x['lotName'].split(', '))))
             | 'Group and Sum' >> beam.CombinePerKey(sum)
             | 'Convert to Dict' >> beam.Map(lambda x: dict(Year=known_args.year, Month=known_args.month, Campo=x[0], Recetas=x[1]))
