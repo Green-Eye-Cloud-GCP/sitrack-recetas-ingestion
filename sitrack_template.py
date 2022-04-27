@@ -3,8 +3,7 @@ import json
 import requests
 
 import apache_beam as beam
-from apache_beam.options.pipeline_options import PipelineOptions
-from apache_beam.options.pipeline_options import SetupOptions, RuntimeValueProvider
+from apache_beam.options.pipeline_options import PipelineOptions, SetupOptions
 
 class GetApiData(beam.DoFn):
 
@@ -43,35 +42,30 @@ class TemplateOptions(PipelineOptions):
         parser.add_argument(
             '--auth',
             dest='auth',
-            required=True,
             type=str,
             help='Sitrack API key'
         )
         parser.add_argument(
             '--dataset',
             dest='dataset',
-            required=True,
             type=str,
             help='BigQuery dataset'
         )
         parser.add_argument(
             '--table',
             dest='table',
-            required=True,
             type=str,
             help='BigQuery table'
         )
         parser.add_value_provider_argument(
             '--year',
             dest='year',
-            default='2022',
             type=str,
             help='Year to query'
         )
         parser.add_value_provider_argument(
             '--month',
             dest='month',
-            default='3',
             type=str,
             help='Month to query'
         )
