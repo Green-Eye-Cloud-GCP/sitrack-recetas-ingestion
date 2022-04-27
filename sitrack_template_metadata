@@ -25,12 +25,12 @@
         {
             "name": "year",
             "label": "Year to query",
-            "isOptional": true
+            "isOptional": false
         },
         {
             "name": "month",
             "label": "Month to query",
-            "isOptional": true
+            "isOptional": false
         }
     ]
 }

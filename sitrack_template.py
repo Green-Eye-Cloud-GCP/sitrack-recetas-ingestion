@@ -1,14 +1,9 @@
 import logging
 import json
 import requests
-from datetime import datetime
 
 import apache_beam as beam
 from apache_beam.options.pipeline_options import PipelineOptions
-from apache_beam.options.pipeline_options import SetupOptions
-
-from google.cloud.bigquery import Client
-
 
 class GetApiData(beam.DoFn):
 
@@ -42,66 +37,41 @@ class TemplateOptions(PipelineOptions):
 
     @classmethod
     def _add_argparse_args(cls, parser):
-
-        today = datetime.today()
-
         parser.add_argument(
             '--auth',
             dest='auth',
             required=True,
+            type=str,
             help='Sitrack API key'
         )
-        # parser.add_argument(
-        #     '--project',
-        #     dest='project',
-        #     required=True,
-        #     help='GCP project'
-        # )
         parser.add_argument(
             '--dataset',
             dest='dataset',
             required=True,
+            type=str,
             help='BigQuery dataset'
         )
         parser.add_argument(
             '--table',
             dest='table',
             required=True,
+            type=str,
             help='BigQuery table'
         )
         parser.add_argument(
             '--year',
             dest='year',
-            default=today.year,
+            required=True,
             type=int,
             help='Year to query'
         )
         parser.add_argument(
             '--month',
             dest='month',
-            default=today.month,
+            required=True,
             type=int,
             help='Month to query'
         )
-
-
-def delete_records(table: str, year: int, month: int):
-
-    client = Client()
-
-    sql = """
-    DELETE 
-    FROM 
-        {}
-    WHERE
-        Year = {} AND
-        Month = {}
-    """.format(table, year, month)
-
-    job = client.query(sql)
-    job.result()
-
-    logging.debug('Records deleted')
 
 
 def run():
@@ -110,14 +80,6 @@ def run():
     pipeline_options.view_as(TemplateOptions)
 
     options = pipeline_options.get_all_options()
-
-    delete_records(
-        '{}.{}.{}'.format(options['project'],
-                          options['dataset'],
-                          options['table']),
-        options['year'],
-        options['month']
-    )
 
     with beam.Pipeline(options=pipeline_options) as p:
 
